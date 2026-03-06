@@ -76,7 +76,7 @@ except ImportError:
 LISTEN_IP       = "0.0.0.0"
 COMMAND_PORT    = 19689
 DATA_PORT       = 19691
-BROADCAST_ADDR  = "169.254.99.255"
+BROADCAST_ADDR  = "169.254.88.255"
 
 # I2C config
 I2C_BUS         = 1
