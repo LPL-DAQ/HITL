@@ -101,12 +101,14 @@ def get_i2c():
     return _i2c_bus
 
 def dac_write(bus, addr, channel, value_10bit):
-    """Write a 10-bit value to the specified DAC channel."""
-    cmd = 0x40 | (channel << 1)
-    val = (value_10bit & 0x3FF) << 6
+    """Write a 10-bit value to the specified DAC channel (and update output)."""
+    # 0x3? = write input register AND update DAC output for channel n
+    ca = 0x30 | (channel & 0x0F)
+
+    val = (value_10bit & 0x3FF) << 6  # keep your 10-bit packing
     hi  = (val >> 8) & 0xFF
     lo  = val & 0xFF
-    bus.write_i2c_block_data(addr, cmd, [hi, lo])
+    bus.write_i2c_block_data(addr, ca, [hi, lo])
 
 def update_dac_outputs(sensors: dict):
     """Push current sensor values out to DAC channels."""
