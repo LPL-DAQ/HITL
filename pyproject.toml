@@ -1,0 +1,19 @@
+[project]
+name = "hitl"
+version = "0.1.0"
+description = "GNC HITL Testbed"
+requires-python = ">=3.11"
+dependencies = [
+    "protobuf>=4.0.0",
+    "smbus2>=0.4.0",
+]
+
+[tool.uv]
+dev-dependencies = []
+
+[tool.hatch.build.targets.wheel]
+packages = ["hitl"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
