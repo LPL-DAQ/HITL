@@ -32,3 +32,25 @@ protoc --python_out=. clover.proto --proto_path=api     # protobuf bindings
     * Pin 3 -> GND (top row)
 
 We can also only use 1 DAC for just 4 sensor inputs
+
+
+# SSH
+How to SSH into RPi5 on Windows
+
+power rpi5 with usb-c
+connect ethernet to your laptop 
+go to Network Connections in control panel
+ethernet -> properties -> sharing -> allow other network users
+open powershell
+Get-NetNeighbor -AddressFamily IPv4 | Where-Object {$_.IPAddress -like "192.168.137.*"} | Format-Table IPAddress,LinkLayerAddress,State
+copy the IP (for me it was 192.168.137.22)
+ssh <hostname>@192.168.137.<final IP number>
+host name is currently "hitl"
+
+enter the password, currently LPLhitl
+
+
+Trouble shooting:
+
+Are you connected to USC Secure Wireless?
+Reflash the OS with raspberry pi imager. Make sure the SSID is USC Secure Wireless, select "Open Network", make sure you are using the hostname you set up
