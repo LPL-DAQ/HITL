@@ -38,7 +38,7 @@ BROADCAST_ADDR  = "169.254.99.255"
 # I2C config
 I2C_BUS         = 1
 DAC_ADDR_1      = 0x4C   # default address
-DAC_ADDR_2      = 0x4D   # AD0 jumper bridged
+DAC_ADDR_2      = 0x4A   # AD0 jumper bridged
 
 # DAC channel mapping - 4 sensors connected to each DAC (use all 8 channels)
 
