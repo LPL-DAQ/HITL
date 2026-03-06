@@ -42,11 +42,13 @@ connect ethernet to your laptop
 go to Network Connections in control panel
 ethernet -> properties -> sharing -> allow other network users
 open powershell
+
+Before continueing, ensure the rpi has been on ~60 seconds
+
 Get-NetNeighbor -AddressFamily IPv4 | Where-Object {$_.IPAddress -like "192.168.137.*"} | Format-Table IPAddress,LinkLayerAddress,State
 copy the IP (for me it was 192.168.137.22)
 ssh <hostname>@192.168.137.<final IP number>
 host name is currently "hitl"
-
 enter the password, currently LPLhitl
 
 
@@ -55,3 +57,16 @@ Trouble shooting:
 Are you connected to USC Secure Wireless?
 Reflash the OS with raspberry pi imager. Make sure the SSID is USC Secure Wireless, select "Open Network", make sure you are using the hostname you set up
 if net neighbor shows "unreachable," turn off network sharing, turn it back on, power cycle rpi
+
+
+# Running
+cd into HITL/hitl
+python3 gnc-testbed.py --csv <csv name>.csv
+
+
+power another PS, ssh again,
+cd into HITL
+source .venv/bin/activate
+cd into hitl
+python3 client-new.py
+
