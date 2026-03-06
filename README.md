@@ -60,13 +60,19 @@ if net neighbor shows "unreachable," turn off network sharing, turn it back on, 
 
 
 # Running
-cd into HITL/hitl
+sudo ip addr add 169.254.88.88/16 dev lo
+
+cd HITL/hitl
 python3 gnc-testbed.py --csv <csv name>.csv
 
+if you get "address already in use"
+pkill -f gnc-testbed.py
 
 power another PS, ssh again,
-cd into HITL
+cd HITL
 source .venv/bin/activate
-cd into hitl
+cd hitl
 python3 client-new.py
 
+if you get "address already in use"
+pkill -f client-new.py
