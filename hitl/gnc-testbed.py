@@ -483,18 +483,20 @@ def handle_client(conn: socket.socket, addr, udp_sock: socket.socket):
     # Auto-subscribe this client to the data stream
     sub = (addr[0], DATA_PORT)   # <-- add this
     with state.lock:
-        state.subscribers.add(sub)
+        # state.subscribers.add(sub)
+        pass
     try:
         while True:
-            # Client uses varint-length-prefixed protobuf frames.
-            msg_len = _recv_varint32(conn)
-            raw = _recv_exact(conn, msg_len)
+            # # Client uses varint-length-prefixed protobuf frames.
+            # msg_len = _recv_varint32(conn)
+            # raw = _recv_exact(conn, msg_len)
 
-            resp_bytes = handle_request(raw, udp_sock)
+            # resp_bytes = handle_request(raw, udp_sock)
 
-            # Respond with the same varint-length framing.
-            framed = _encode_varint32(len(resp_bytes)) + resp_bytes
+            # # Respond with the same varint-length framing.
+            # framed = _encode_varint32(len(resp_bytes)) + resp_bytes
             # conn.sendall(framed)
+            pass
 
     except Exception as e:
         print(f"  Client {addr} error: {e}")
