@@ -31,8 +31,8 @@ except ImportError:
 
 # Network
 LISTEN_IP       = "0.0.0.0"
-COMMAND_PORT    = 5000
-DATA_PORT       = 5001
+COMMAND_PORT    = 19690
+DATA_PORT       = 19691
 BROADCAST_ADDR  = "169.254.99.255"
 
 # I2C config
@@ -384,7 +384,7 @@ def handle_request(raw: bytes, udp_sock: socket.socket) -> bytes:
                 resp.err = f"Cannot start from {clover_pb2.SystemState.Name(state.system_state)}"
             else:
                 state.sequence_running = True
-        if not resp.HasField("err"):
+        if not resp.err:
             t = threading.Thread(
                 target=_sequence_wrapper,
                 args=(udp_sock,),
@@ -406,7 +406,7 @@ def handle_request(raw: bytes, udp_sock: socket.socket) -> bytes:
                 resp.err = f"Cannot start from {clover_pb2.SystemState.Name(state.system_state)}"
             else:
                 state.sequence_running = True
-        if not resp.HasField("err"):
+        if not resp.err:
             t = threading.Thread(
                 target=_sequence_wrapper,
                 args=(udp_sock,),
@@ -435,28 +435,27 @@ def _sequence_wrapper(udp_sock):
 def handle_client(conn: socket.socket, addr, udp_sock: socket.socket):
     print(f"  Client connected: {addr}")
     # Auto-subscribe this client to the data stream
+    sub = (addr[0], DATA_PORT)   # <-- add this
     with state.lock:
-        state.subscribers.add((addr[0], DATA_PORT))
+        state.subscribers.add(sub)
     try:
         while True:
-            # Read all available data
-            conn.settimeout(1.0)
-            try:
-                raw = conn.recv(4096)
-            except socket.timeout:
-                continue
-            if not raw:
-                break
+            # Client uses varint-length-prefixed protobuf frames.
+            msg_len = _recv_varint32(conn)
+            raw = _recv_exact(conn, msg_len)
+
             resp_bytes = handle_request(raw, udp_sock)
-            conn.sendall(resp_bytes)
+
+            # Respond with the same varint-length framing.
+            framed = _encode_varint32(len(resp_bytes)) + resp_bytes
+            conn.sendall(framed)
+
     except Exception as e:
         print(f"  Client {addr} error: {e}")
     finally:
-        print(f"  Client disconnected: {addr}")
-        # remove stale UDP subscriber
         with state.lock:
             state.subscribers.discard(sub)
-
+        print(f"  Client disconnected: {addr}")
         conn.close()
 
 
