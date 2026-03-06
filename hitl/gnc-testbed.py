@@ -74,7 +74,7 @@ except ImportError:
 
 # Network
 LISTEN_IP       = "0.0.0.0"
-COMMAND_PORT    = 19690
+COMMAND_PORT    = 19689
 DATA_PORT       = 19691
 BROADCAST_ADDR  = "169.254.99.255"
 
@@ -288,7 +288,7 @@ def run_sequence(udp_sock: socket.socket):
             print("  Sequence ABORTED")
             with state.lock:
                 state.system_state = clover_pb2.STATE_ABORT
-            send_data_packet(udp_sock)
+            # send_data_packet(udp_sock)
             return
 
         # Wait until the right real time for this row
@@ -310,7 +310,7 @@ def run_sequence(udp_sock: socket.socket):
         update_dac_outputs(state.sensors)
 
         # Send data packet to all subscribers
-        send_data_packet(udp_sock, row)
+        # send_data_packet(udp_sock, row)
 
     # Sequence complete
     print("  Sequence complete — returning to IDLE")
@@ -494,7 +494,7 @@ def handle_client(conn: socket.socket, addr, udp_sock: socket.socket):
 
             # Respond with the same varint-length framing.
             framed = _encode_varint32(len(resp_bytes)) + resp_bytes
-            conn.sendall(framed)
+            # conn.sendall(framed)
 
     except Exception as e:
         print(f"  Client {addr} error: {e}")
@@ -536,9 +536,9 @@ def main():
     udp_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     udp_sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-    # Start telemetry in background
-    t_telem = threading.Thread(target=idle_telemetry_loop, args=(udp_sock,), daemon=True)
-    t_telem.start()
+    # # Start telemetry in background
+    # t_telem = threading.Thread(target=idle_telemetry_loop, args=(udp_sock,), daemon=True)
+    # t_telem.start()
 
     # Start TCP command server
     print("GNC HIL Simulator starting...")

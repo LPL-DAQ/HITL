@@ -57,8 +57,10 @@ THRUST_SEQ_DIR = pathlib.Path("sequences/thrust")
 
 # Network
 ZEPHYR_IP = "169.254.99.99"  # real board
+TESTBED_IP = "169.254.88.88" # HITL
 #ZEPHYR_IP   = "127.0.0.1"      # fake_telemetry.py
 ZEPHYR_PORT = 19690
+TESTBED_PORT = 19689
 LOCAL_PORT  = 19691
 
 # ── ClickHouse config ────────────────────────────────────────────────────────
@@ -97,6 +99,10 @@ _csv_store_lock = threading.Lock()
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.settimeout(2.0)
 sock.connect((ZEPHYR_IP, ZEPHYR_PORT))
+
+sock2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+sock2.settimeout(2.0)
+sock2.connect((TESTBED_IP, TESTBED_PORT))
 # ── Telemetry listener ───────────────────────────────────────────────────────
 
 def listen_for_telemetry():
@@ -498,6 +504,7 @@ def send_request(req: clover_pb2.Request, label: str) -> bool:
         payload = req.SerializeToString()
         payload = _VarintBytes(len(payload)) + payload
         sock.sendall(payload)
+        sock2.sendall(payload)
     except Exception as e:
         console.print(
             f"\n  {THEME['icon_warn']} [{THEME['danger']}]Failed to send {label}: {e}[/{THEME['danger']}]\n"
