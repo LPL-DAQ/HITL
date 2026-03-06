@@ -98,11 +98,23 @@ _csv_store_lock = threading.Lock()
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.settimeout(2.0)
-sock.connect((ZEPHYR_IP, ZEPHYR_PORT))
+try: 
+    sock.connect((ZEPHYR_IP, ZEPHYR_PORT))
+    hasTeensy = True
+except:
+    hasTeensy = False
 
 sock2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock2.settimeout(2.0)
-sock2.connect((TESTBED_IP, TESTBED_PORT))
+
+try:
+    sock2.connect((TESTBED_IP, TESTBED_PORT))   
+    hasHITL = True
+except:
+    hasHITL = False
+    
+if (not hasHITL and not hasTeensy):
+    raise Exception("ERROR, NO HITL or TEENSY DETECTED")
 # ── Telemetry listener ───────────────────────────────────────────────────────
 
 def listen_for_telemetry():
@@ -472,6 +484,9 @@ def get_toolbar():
 # ── TCP sender ───────────────────────────────────────────────────────────────
 
 def _recv_response() -> clover_pb2.Response:
+    if (not hasTeensy):
+        return
+
     """Read a varint-length-prefixed Response from the TCP socket."""
     length = 0
     shift = 0
@@ -503,8 +518,10 @@ def send_request(req: clover_pb2.Request, label: str) -> bool:
     try:
         payload = req.SerializeToString()
         payload = _VarintBytes(len(payload)) + payload
-        sock.sendall(payload)
-        sock2.sendall(payload)
+        if (hasTeensy):
+            sock.sendall(payload)
+        if (hasHITL):
+            sock2.sendall(payload)
     except Exception as e:
         console.print(
             f"\n  {THEME['icon_warn']} [{THEME['danger']}]Failed to send {label}: {e}[/{THEME['danger']}]\n"
