@@ -10,6 +10,49 @@ import threading
 import time
 import sys
 import os
+import traceback
+
+
+# Protobuf TCP framing (varint length prefix) 
+def _recv_varint32(conn: socket.socket) -> int:
+    'Read protobuf varint32 length prefix from a TCP socket.'
+    result = 0
+    shift = 0
+    while True:
+        b = conn.recv(1)
+        if not b:
+            raise ConnectionError('Connection closed while reading length prefix')
+        byte = b[0]
+        result |= (byte & 0x7F) << shift
+        if not (byte & 0x80):
+            return result
+        shift += 7
+        if shift > 35:
+            raise ValueError('Varint length prefix too long')
+
+def _recv_exact(conn: socket.socket, n: int) -> bytes:
+    data = b''
+    while len(data) < n:
+        chunk = conn.recv(n - len(data))
+        if not chunk:
+            raise ConnectionError('Connection closed while reading message body')
+        data += chunk
+    return data
+
+def _encode_varint32(value: int) -> bytes:
+    out = bytearray()
+    v = int(value)
+    while True:
+        to_write = v & 0x7F
+        v >>= 7
+        if v:
+            out.append(to_write | 0x80)
+        else:
+            out.append(to_write)
+            break
+    return bytes(out)
+
+
 
 # Protobuf
 try:
@@ -143,7 +186,7 @@ def build_data_packet(row: dict | None = None) -> clover_pb2.DataPacket:
         pkt = clover_pb2.DataPacket()
         pkt.time_ns                 = time.time_ns() - state.start_time_ns
         pkt.state                   = state.system_state
-        pkt.data_queue_size         = 0
+        pkt.data_queue_size         = int(row.get('data_queue_size', 0)) if row else 0
         pkt.sequence_number         = state.sequence_number
         pkt.controller_tick_time_ns = 1_000_000.0
         pkt.gnc_connected           = len(state.subscribers) > 0
@@ -172,10 +215,10 @@ def build_data_packet(row: dict | None = None) -> clover_pb2.DataPacket:
         pkt.analog_sensors.adc_read_time_ns = 100_000.0
 
         # Valve state — use CSV row if provided, else current state
-        fuel_enc = row["fuel_valve_encoder_pos"] if row else state.fuel_encoder
-        lox_enc  = row["lox_valve_encoder_pos"]  if row else state.lox_encoder
-        fuel_tgt = row["fuel_valve_setpoint"]     if row else state.fuel_target
-        lox_tgt  = row["lox_valve_setpoint"]      if row else state.lox_target
+        fuel_enc = row.get("fuel_valve_encoder_pos", state.fuel_encoder) if row else state.fuel_encoder
+        lox_enc  = row.get("lox_valve_encoder_pos", state.lox_encoder)  if row else state.lox_encoder
+        fuel_tgt = row.get("fuel_valve_setpoint", state.fuel_target)     if row else state.fuel_target
+        lox_tgt  = row.get("lox_valve_setpoint", state.lox_target)      if row else state.lox_target
 
         pkt.fuel_valve.target_pos_deg         = fuel_tgt
         pkt.fuel_valve.driver_setpoint_pos_deg= fuel_tgt
@@ -303,10 +346,13 @@ def handle_request(raw: bytes, udp_sock: socket.socket) -> bytes:
     if payload == "subscribe_data_stream":
         # caller's IP is added in the TCP handler
         pass
-
     elif payload == "identify_client":
         client = req.identify_client.client
-        print(f"    Client identified as: {clover_pb2.ClientType.Name(client)}")
+        try:
+            cname = clover_pb2.ClientType.Name(client)
+        except Exception:
+            cname = str(client)
+        print(f"    Client identified as: {cname}")
 
     elif payload == "is_not_aborted_request":
         with state.lock:
@@ -452,6 +498,7 @@ def handle_client(conn: socket.socket, addr, udp_sock: socket.socket):
 
     except Exception as e:
         print(f"  Client {addr} error: {e}")
+        traceback.print_exc()
     finally:
         with state.lock:
             state.subscribers.discard(sub)
