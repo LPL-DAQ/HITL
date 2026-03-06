@@ -451,6 +451,10 @@ def handle_client(conn: socket.socket, addr, udp_sock: socket.socket):
         print(f"  Client {addr} error: {e}")
     finally:
         print(f"  Client disconnected: {addr}")
+        # remove stale UDP subscriber
+        with state.lock:
+            state.subscribers.discard(sub)
+
         conn.close()
 
 
