@@ -37,5 +37,7 @@ time.sleep(2)
 
 for a in ADDRS:
     write_update(bus, a, ch=0, code=0, bits=10)
+    write_update(bus, a, ch=1, code=409, bits=10)
+
 
 print("Done.")
