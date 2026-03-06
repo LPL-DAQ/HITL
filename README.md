@@ -13,7 +13,7 @@ sudo apt install -y python3-pip python3-venv i2c-tools protobuf-compiler
 
 pip3 install --break-system-packages smbus2 protobuf rich
 
-protoc --python_out=. clover.proto --proto_path=api     # protobuf bindings
+protoc --python_out=. clover.proto     # run inside of the folder containing clover.proto
 
 ```
 
