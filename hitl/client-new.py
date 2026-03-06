@@ -107,11 +107,11 @@ except:
 sock2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock2.settimeout(2.0)
 
-try:
-    sock2.connect((TESTBED_IP, TESTBED_PORT))   
-    hasHITL = True
-except:
-    hasHITL = False
+# try:
+sock2.connect((TESTBED_IP, TESTBED_PORT))   
+hasHITL = True
+# except :
+#     hasHITL = False
     
 if (not hasHITL and not hasTeensy):
     raise Exception("ERROR, NO HITL or TEENSY DETECTED")
