@@ -65,7 +65,6 @@ message IdentifyClientRequest {
 enum ClientType {
   UNKNOWN_CLIENT = 1;
   GNC = 2;
-  DAQ = 3;
 }
 
 // Configures bias for a PT or TC.
