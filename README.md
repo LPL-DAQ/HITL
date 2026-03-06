@@ -54,3 +54,4 @@ Trouble shooting:
 
 Are you connected to USC Secure Wireless?
 Reflash the OS with raspberry pi imager. Make sure the SSID is USC Secure Wireless, select "Open Network", make sure you are using the hostname you set up
+if net neighbor shows "unreachable," turn off network sharing, turn it back on, power cycle rpi

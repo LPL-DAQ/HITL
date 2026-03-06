@@ -29,11 +29,13 @@ time.sleep(0.05)
 
 print("Setting OUT0 to full-scale (12-bit) for 2s, then 0V…")
 for a in ADDRS:
-    write_update(bus, a, ch=0, code=4095, bits=12)
+    write_update(bus, a, ch=0, code=409, bits=10)
+    write_update(bus, a, ch=1, code=409, bits=10)
+
 
 time.sleep(2)
 
 for a in ADDRS:
-    write_update(bus, a, ch=0, code=0, bits=12)
+    write_update(bus, a, ch=0, code=0, bits=10)
 
 print("Done.")
