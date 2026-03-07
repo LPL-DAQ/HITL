@@ -90,7 +90,7 @@ power another PS, ssh again,
 cd HITL
 source .venv/bin/activate
 cd hitl
-python3 client-y.py
+python3 client-new2.py
 
 if you get "address already in use"
 pkill -f client-new.py

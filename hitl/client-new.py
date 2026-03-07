@@ -158,13 +158,13 @@ def _make_tcp_socket() -> socket.socket:
     s.connect((ZEPHYR_IP, ZEPHYR_PORT))
     return s
 
-    sock.connect((ZEPHYR_IP, ZEPHYR_PORT))
-    hasTeensy = True
-    print("has teensy")
 
 try:
 
     sock = _make_tcp_socket()
+    sock.connect((ZEPHYR_IP, ZEPHYR_PORT))
+    hasTeensy = True
+    print("has teensy")
 except Exception as e:
     hasTeensy = False
     print("no teensy")
