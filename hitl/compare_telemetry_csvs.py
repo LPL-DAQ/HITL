@@ -47,12 +47,10 @@ WIDE_TO_CANONICAL = {
     "data_queue_size": "gnc_data_queue_size",
     # Fuel valve / motor positions
     "fuel_valve_setpoint": "gnc_fuel_target",
-    "fuel_valve_internal_pos": "gnc_fuel_driver",
     "fuel_valve_driver": "gnc_fuel_driver",
     "fuel_valve_encoder_pos": "gnc_fuel_encoder",
     # Lox valve / motor positions
     "lox_valve_setpoint": "gnc_lox_target",
-    "lox_valve_internal_pos": "gnc_lox_driver",
     "lox_valve_driver": "gnc_lox_driver",
     "lox_valve_encoder_pos": "gnc_lox_encoder",
     # PTs

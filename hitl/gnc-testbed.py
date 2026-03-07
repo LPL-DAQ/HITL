@@ -92,7 +92,7 @@ DAC_CHANNEL_MAP = [
     (DAC_ADDR_1, 2, "pt203",   0.0, 300.0),
     (DAC_ADDR_2, 0, "pto401",  0.0, 300.0),
     (DAC_ADDR_2, 1, "ptf401",  0.0, 300.0),
-    (DAC_ADDR_2, 3, "ptc401",  0.0, 100.0),
+    (DAC_ADDR_2, 6, "ptc401",  0.0, 100.0),
     (DAC_ADDR_2, 2, "ptc402",  0.0, 100.0),
 ]
 
