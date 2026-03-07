@@ -85,11 +85,26 @@ CSV_COLUMNS = ["time", "sensor", "value", "event", "system", "source"]
 # record the fields that are actually useful for comparing the model output.
 HITL_CSV_FIELDS = {
     'time',
+    'gnc_pt102',
+    'gnc_pt103',
+    'gnc_pt202',
+    'gnc_pt203',
     'gnc_ptf401',
     'gnc_pto401',
     'gnc_ptc401',
     'gnc_ptc402',
-    'gnc_predicted_thrust',
+    'predicted_thrust',
+    'predicted_of',
+    'mdot_fuel',
+    'mdot_lox',
+    'target_thrust',
+    'thrust_error',
+    'change_alpha_cmd',
+    'clamped_change_alpha_cmd',
+    'alpha',
+    'thrust_from_alpha', 
+    'fuel_valve_cmd' ,
+    'lox_valve_cmd' ,
     'gnc_fuel_target',
     'gnc_fuel_driver',
     'gnc_fuel_encoder',
@@ -221,15 +236,21 @@ def _packet_to_row(recv_time: float, pkt: clover_pb2.DataPacket) -> dict:
     }
     
     if pkt.HasField('thrust_sequence_data'):
-        row['gnc_predicted_thrust'] = float(pkt.thrust_sequence_data.predicted_thrust)
+        row['gnc_predicted_thrust'] = float(pkt.predicted_thrust)
+        row['gnc_predicted_of'] = float(pkt.predicted_of)
+        row['gnc_mdot_fuel'] = float(pkt.mdot_fuel)
+        row['gnc_mdot_lox'] = float(pkt.mdot_lox)
+        row['gnc_target_thrust'] = float(pkt.target_thrust)
+        row['gnc_thrust_error'] = float(pkt.thrust_error)
+        row['gnc_change_alpha_cmd'] = float(pkt.change_alpha_cmd)
+        row['gnc_clamped_change_alpha_cmd'] = float(pkt.clamped_change_alpha_cmd)
+        row['gnc_alpha'] = float(pkt.alpha)
+        row['gnc_thrust_from_alpha'] = float(pkt.thrust_from_alpha)
 
     if hasHITL:
         row = {k: v for k, v in row.items() if k in HITL_CSV_FIELDS}
 
     return row
-
-
-    
 
 
 def _packet_to_csv_rows(recv_time: float, pkt: clover_pb2.DataPacket) -> list[dict]:
