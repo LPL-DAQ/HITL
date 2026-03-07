@@ -81,6 +81,24 @@ CH_DATABASE = "lpl"
 # PROTO CHANGE: time is now time_ns (nanoseconds), updated comment above.
 CSV_COLUMNS = ["time", "sensor", "value", "event", "system", "source"]
 
+# When running against the HITL testbed, keep the CSV much smaller and only
+# record the fields that are actually useful for comparing the model output.
+HITL_CSV_FIELDS = {
+    'time',
+    'gnc_ptf401',
+    'gnc_pto401',
+    'gnc_ptc401',
+    'gnc_ptc402',
+    'gnc_predicted_thrust',
+    'gnc_fuel_target',
+    'gnc_fuel_driver',
+    'gnc_fuel_encoder',
+    'gnc_lox_target',
+    'gnc_lox_driver',
+    'gnc_lox_encoder',
+}
+
+
 # CSV filename is generated at exit time so it reflects when the session ended.
 # Format: raw_sensors_YYYYMMDD_HHMMSS.csv
 
@@ -142,6 +160,10 @@ def listen_for_telemetry():
                 _packet_buffer.append((recv_time, packet))
             with _csv_store_lock:
                 _csv_store.append((recv_time, packet))
+                    
+         
+                    
+                    
         except Exception:
             pass
 
@@ -169,7 +191,7 @@ def _packet_to_row(recv_time: float, pkt: clover_pb2.DataPacket) -> dict:
     s = pkt.analog_sensors
     f = pkt.fuel_valve
     l = pkt.lox_valve
-    return {
+    row = {
         'time':                     int(recv_time * 1e6),
         'gnc_state':                float(pkt.state),
         'gnc_data_queue_size':      float(pkt.data_queue_size),
@@ -197,6 +219,17 @@ def _packet_to_row(recv_time: float, pkt: clover_pb2.DataPacket) -> dict:
         'gnc_lox_encoder':          float(l.encoder_pos_deg),
         'gnc_lox_is_on':            float(l.is_on),      # PROTO CHANGE: was 'enabled'
     }
+    
+    if pkt.HasField('thrust_sequence_data'):
+        row['gnc_predicted_thrust'] = float(pkt.thrust_sequence_data.predicted_thrust)
+
+    if hasHITL:
+        row = {k: v for k, v in row.items() if k in HITL_CSV_FIELDS}
+
+    return row
+
+
+    
 
 
 def _packet_to_csv_rows(recv_time: float, pkt: clover_pb2.DataPacket) -> list[dict]:
