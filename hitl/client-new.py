@@ -27,6 +27,7 @@ from prompt_toolkit import PromptSession
 from prompt_toolkit.formatted_text import HTML
 import clickhouse_connect
 import polars as pl
+import traceback
 
 
 THEME = {
@@ -102,9 +103,10 @@ try:
     sock.connect((ZEPHYR_IP, ZEPHYR_PORT))
     hasTeensy = True
     print("has teensy")
-except:
+except Exception as e:
     hasTeensy = False
     print("no teensy")
+    traceback.print_exc()    
 
 sock2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock2.settimeout(2.0)
@@ -113,8 +115,10 @@ try:
     sock2.connect((TESTBED_IP, TESTBED_PORT))   
     hasHITL = True
     print("has hitl")
-except :
+except Exception as e:
     print("no hitl")
+    
+    traceback.print_exc()
     hasHITL = False
     
 if (not hasHITL and not hasTeensy):
