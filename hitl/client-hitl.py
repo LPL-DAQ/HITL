@@ -30,6 +30,7 @@ import clickhouse_connect
 import polars as pl
 from collections import deque
 import plotext as plt
+import traceback
 
 
 THEME = {
@@ -55,17 +56,21 @@ THEME = {
     "icon_quit": "❌",
 }
 
-ALVE_SEQ_DIR  = pathlib.Path("sequences/valve")
+VALVE_SEQ_DIR  = pathlib.Path("sequences/valve")
 THRUST_SEQ_DIR = pathlib.Path("sequences/thrust")
 
 # Network
-# ZEPHYR_IP = "169.254.99.99"  # real board
-ZEPHYR_IP   = "127.0.0.1"      # fake_telemetry.py
+ZEPHYR_IP = "169.254.99.99"  # real board
+# ZEPHYR_IP   = "127.0.0.1"      # fake_telemetry.py
 TESTBED_IP = "127.0.0.1" # HITL
+
+#ZEPHYR_IP   = "127.0.0.1"      # fake_telemetry.py
+
 ZEPHYR_PORT = 19690
-TESTBED_PORT = 19689
 DATA_IP = "0.0.0.0"  # Listen to UDP from anybody
 DATA_PORT = 19691
+TESTBED_PORT = 19689
+
 
 # ── ClickHouse config ────────────────────────────────────────────────────────
 CH_HOST = "172.233.143.186"
@@ -82,6 +87,8 @@ CH_DATABASE = "lpl"
 #   source — always 'gnc'            (ClickHouse 'source')
 # PROTO CHANGE: time is now time_ns (nanoseconds), updated comment above.
 CSV_COLUMNS = ["time", "sensor", "value", "event", "system", "source"]
+
+
 # When running against the HITL testbed, keep the CSV much smaller and only
 # record the fields that are actually useful for comparing the model output.
 HITL_CSV_FIELDS = {
@@ -160,17 +167,15 @@ def _make_tcp_socket() -> socket.socket:
 
 
 try:
-
     sock = _make_tcp_socket()
-    sock.connect((ZEPHYR_IP, ZEPHYR_PORT))
-    hasTeensy = True
-    print("has teensy")
+
 except Exception as e:
     hasTeensy = False
     print("no teensy")
     traceback.print_exc()
+    
 try:
-    sock2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock2= socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock2.settimeout(2.0)
     sock2.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
     sock2.setsockopt(
@@ -183,15 +188,10 @@ try:
     sock2.connect((ZEPHYR_IP, ZEPHYR_PORT))
     hasHITL = True
     print("has hitl")
-    
 except Exception as e:
     print("no hitl")
     traceback.print_exc()
     hasHITL = False
-    
-if (not hasHITL and not hasTeensy):
-    raise Exception("ERROR, NO HITL or TEENSY DETECTED")
-
 # ── Telemetry listener ───────────────────────────────────────────────────────
 
 
@@ -264,7 +264,7 @@ def _packet_to_row(recv_time: float, pkt: clover_pb2.DataPacket) -> dict:
     s = pkt.analog_sensors
     f = pkt.fuel_valve
     l = pkt.lox_valve
-    row = {
+    row= {
         'time':                     int(pkt.time_ns),     # PROTO CHANGE: was pkt.time (seconds), now pkt.time_ns (nanoseconds)
         'state':                float(pkt.state),
         'data_queue_size':      float(pkt.data_queue_size),
@@ -764,8 +764,8 @@ def _build_status_renderable():
     return Group(
         header_panel,
         bottom,
-        Columns([_build_fuel_valve_graph(), _build_lox_valve_graph()]),
-        Columns([_build_fuel_graph(),       _build_lox_graph()]),
+        #Columns([_build_fuel_valve_graph(), _build_lox_valve_graph()]),
+        #Columns([_build_fuel_graph(),       _build_lox_graph()]),
     )
 
 
