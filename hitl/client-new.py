@@ -58,7 +58,7 @@ THRUST_SEQ_DIR = pathlib.Path("sequences/thrust")
 
 # Network
 ZEPHYR_IP = "169.254.99.99"  # real board
-TESTBED_IP = "169.254.88.88" # HITL
+TESTBED_IP = "127.0.0.1" # HITL
 #ZEPHYR_IP   = "127.0.0.1"      # fake_telemetry.py
 ZEPHYR_PORT = 19690
 TESTBED_PORT = 19689

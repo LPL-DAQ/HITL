@@ -81,7 +81,7 @@ enter the password, currently LPLhitl
 sudo ip addr add 169.254.88.88/16 dev lo
 
 cd HITL/hitl
-python3 gnc-testbed.py --csv <csv name>.csv
+python3 gnc-testbed.py --csv test_data.csv
 
 if you get "address already in use"
 pkill -f gnc-testbed.py
