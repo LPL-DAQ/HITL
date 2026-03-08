@@ -9,7 +9,7 @@ sudo apt update -y
 sudo apt upgrade -y
 
 # enable i2c
-sudo raspi-config nonint do_i2c 0   
+sudo raspi-config nonint do_i2c 0 
 
 sudo apt install -y python3-pip python3-venv i2c-tools protobuf-compiler
 
@@ -18,6 +18,12 @@ pip3 install --break-system-packages smbus2 protobuf rich
  # run inside of the folder containing clover.proto
 protoc --python_out=. clover.proto  
 
+
+python3 -m venv .venv
+source .venv/bin/activate
+
+python -m pip install --upgrade pip
+pip install "protobuf>=4.0.0" "smbus2>=0.4.0"
 ```
 
 
@@ -81,7 +87,7 @@ enter the password, currently LPLhitl
 sudo ip addr add 169.254.88.88/16 dev lo
 
 cd HITL/hitl
-python3 gnc-testbed.py --csv test_data.csv
+python3 gnc-testbed.py --csv sin_step_down_mixed.csv
 
 if you get "address already in use"
 pkill -f gnc-testbed.py

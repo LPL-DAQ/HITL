@@ -168,6 +168,9 @@ def _make_tcp_socket() -> socket.socket:
 
 try:
     sock = _make_tcp_socket()
+    hasTeensy = True
+    print("has teensy")
+
 
 except Exception as e:
     hasTeensy = False
