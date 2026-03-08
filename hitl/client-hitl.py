@@ -887,7 +887,10 @@ def send_request(req: clover_pb2.Request, label: str) -> bool:
     payload = _VarintBytes(len(raw)) + raw
     for attempt in range(2):
         try:
-            sock.sendall(payload)
+            if (hasTeensy):
+                sock.sendall(payload)
+            if (hasHITL):
+                sock2.sendall(payload)
             break
         except Exception as e:
             if attempt == 0:
