@@ -188,7 +188,7 @@ try:
     sock2.setsockopt(
         socket.IPPROTO_TCP, socket.TCP_KEEPCNT, 3
     )  # drop after 3 missed probes
-    sock2.connect((ZEPHYR_IP, ZEPHYR_PORT))
+    sock2.connect((TESTBED_IP, TESTBED_PORT))
     hasHITL = True
     print("has hitl")
 except Exception as e:
