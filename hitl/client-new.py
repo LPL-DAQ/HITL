@@ -18,7 +18,7 @@ from rich.table import Table
 from rich.text import Text
 from rich.layout import Layout
 from rich.live import Live
-from rich.rule import Rulepyt
+from rich.rule import Rule
 from rich.columns import Columns
 from rich import box
 import clover_pb2
