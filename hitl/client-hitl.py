@@ -60,7 +60,8 @@ VALVE_SEQ_DIR  = pathlib.Path("sequences/valve")
 THRUST_SEQ_DIR = pathlib.Path("sequences/thrust")
 
 # Network
-ZEPHYR_IP = "169.254.99.99"  # real board
+ZEPHYR_IP = "169.254.88.77" # incorrect so that it wont connect
+# ZEPHYR_IP = "169.254.99.99"  # real board
 # ZEPHYR_IP   = "127.0.0.1"      # fake_telemetry.py
 TESTBED_IP = "127.0.0.1" # HITL
 
