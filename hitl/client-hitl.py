@@ -244,8 +244,19 @@ def listen_for_telemetry():
             continue
 
 
-# update SystemState with (0–7); range 8
-_STATE_NAMES = {float(i): clover_pb2.SystemState.Name(i) for i in range(8)}
+# Build state-name mapping from whichever protobuf enum is actually loaded.
+_STATE_NAMES = {
+    float(number): name
+    for name, number in clover_pb2.SystemState.items()
+}
+
+
+def _safe_state_name(value) -> str:
+    """Return enum name for SystemState value, even if unknown to this client build."""
+    try:
+        return clover_pb2.SystemState.Name(int(value))
+    except (TypeError, ValueError):
+        return f"STATE_UNKNOWN_{value}"
 
 
 # ── Data flattening ──────────────────────────────────────────────────────────
@@ -653,7 +664,7 @@ def _build_status_renderable():
             border_style=t["panel_border"],
         )
 
-    state_name = clover_pb2.SystemState.Name(pkt.state)
+    state_name = _safe_state_name(pkt.state)
     state_color = STATE_COLORS.get(state_name, "white")
 
     # abort is now STATE_ABORT in state enum
@@ -820,7 +831,7 @@ def get_toolbar():
     if pkt is None:
         return HTML(" <b>📡</b> No telemetry yet...")
 
-    state_name = clover_pb2.SystemState.Name(pkt.state)
+    state_name = _safe_state_name(pkt.state)
     tag, short = _TOOLBAR_STATE_TAGS.get(state_name, ("ansiwhite", state_name))
 
     is_abort = state_name == "STATE_ABORT"
