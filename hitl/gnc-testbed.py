@@ -87,11 +87,11 @@ DAC_ADDR_2      = 0x4A   # AD0 jumper bridged
 DAC_CHANNEL_MAP = [
     # (dac_addr, channel, csv_column,   sensor_min, sensor_max)
     (DAC_ADDR_1, 1, "pt102",   0.0, 2000.0),
-    (DAC_ADDR_1, 0, "pt103",   0.0, 2000.0),
+    (DAC_ADDR_1, 0, "pt103",   0.0, 1000.0),
     (DAC_ADDR_1, 3, "pt202",   0.0, 2000.0),
-    (DAC_ADDR_1, 2, "pt203",   0.0, 2000.0),
-    (DAC_ADDR_2, 0, "pto401",  0.0, 2000.0),
-    (DAC_ADDR_2, 1, "ptf401",  0.0, 2000.0),
+    (DAC_ADDR_1, 2, "pt203",   0.0, 3000.0),
+    (DAC_ADDR_2, 0, "pto401",  0.0, 1000.0),
+    (DAC_ADDR_2, 1, "ptf401",  0.0, 1000.0),
     (DAC_ADDR_2, 6, "ptc401",  0.0, 1000.0),
     (DAC_ADDR_2, 2, "ptc402",  0.0, 1000.0),
 ]
